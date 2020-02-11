@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="ec826514-32dc-44ce-94d5-050b9d03eab4" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="8faefaf6-a75c-4355-a856-b32d1734a360" basePath="/api" >
+		<http:request-connection host="contact-api-123.us-e2.cloudhub.io" />
+	</http:request-config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="a089abdd-75ac-4dc2-a5de-73acc389b8a2" >
+		<salesforce:cached-basic-connection username="satish.garry@gmail.com" password="sowmya87" securityToken="IJCxVDGt2r95WyZr4r7UW32k" />
+	</salesforce:sfdc-config>
+	<flow name="contact-salesforce-integrationFlow" doc:id="350adb72-42e1-4f7f-a92d-a6c001f14601" >
+		<http:listener doc:name="Listener" doc:id="acf21196-2fbe-427f-8f49-e6c7b0e34aa4" config-ref="HTTP_Listener_config" path="/submit"/>
+		<http:request method="GET" doc:name="Request" doc:id="df4d580a-9371-41c9-9fc9-929d64ed242b" config-ref="HTTP_Request_configuration" path="/contacts"/>
+		<foreach doc:name="For Each" doc:id="67e08ce1-0e40-41e2-9ee1-5b8313bc0de7" collection="#[payload]">
+			<salesforce:create-single doc:name="Create single" doc:id="4c792e6c-0409-47ba-b9e4-3e0a9bc62adf" config-ref="Salesforce_Config" type="Lead"/>
+		</foreach>
+	</flow>
+</mule>
